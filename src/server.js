@@ -9,7 +9,9 @@ const path = require('path')
 const net = require('net')
 const { WebSocketServer } = require('ws')
 const { exec } = require('child_process')
+const systrayModule = require('systray2')
 
+const SysTray = systrayModule.SysTray || systrayModule.default || systrayModule
 const OP = { HANDSHAKE: 0, FRAME: 1, CLOSE: 2, PING: 3, PONG: 4 }
 
 const getIpcPath = (index = 0) => {
@@ -186,7 +188,7 @@ const DEFAULT_CONFIG = {
 const openBrowser = (url) => {
   const safeUrl = String(url).replace(/"/g, '\\"')
   if (process.platform === 'win32') {
-    exec(`start "" "${safeUrl}"`)
+    exec(`start "" "${safeUrl}"`, { windowsHide: true })
     return
   }
   if (process.platform === 'darwin') {
@@ -223,8 +225,8 @@ const findFreePort = (start = 4518) => new Promise((resolve, reject) => {
     server.on('error', () => probe(port + 1))
     server.listen(port, '127.0.0.1', () => {
       const { port: found } = server.address()
-      server.close((err) => {
-        if (err) return reject(err)
+      server.close((error) => {
+        if (error) return reject(error)
         resolve(found)
       })
     })
@@ -399,6 +401,29 @@ const parseBody = (request) => new Promise((resolve, reject) => {
   request.on('error', reject)
 })
 
+const openConfigFile = () => {
+  if (!fs.existsSync(CONFIG_PATH)) saveConfig(loadConfig())
+  const safePath = String(CONFIG_PATH).replace(/"/g, '\\"')
+  if (process.platform === 'win32') {
+    exec(`start "" "${safePath}"`, { windowsHide: true })
+    return
+  }
+  if (process.platform === 'darwin') {
+    exec(`open "${safePath}"`)
+    return
+  }
+  exec(`xdg-open "${safePath}"`)
+}
+
+const quitApp = async ({ server, systray }) => {
+  try { await destroyRpc() } catch (_) { }
+  try { systray?.kill() } catch (_) { }
+  try {
+    server?.close(() => process.exit(0))
+    setTimeout(() => process.exit(0), 300)
+  } catch (_) { process.exit(0) }
+}
+
 const main = async () => {
   const port = await findFreePort()
   const server = http.createServer(async (request, response) => {
@@ -465,7 +490,6 @@ const main = async () => {
     socket.on('message', async (raw) => {
       let message
       try { message = JSON.parse(raw.toString()) } catch {
-        console.warn('[ws] Invalid JSON from client')
         socket.send(JSON.stringify({ type: 'error', message: 'Invalid JSON' }))
         return
       }
@@ -478,7 +502,7 @@ const main = async () => {
           await connectRpc(message.clientId, wss)
           break
         case 'disconnect':
-          destroyRpc()
+          await destroyRpc()
           broadcast(wss, { type: 'status', connected: false })
           break
         case 'setActivity':
@@ -491,14 +515,47 @@ const main = async () => {
         case 'clearActivity':
           await clearActivity(wss)
           break
-        default:
-          console.warn('[ws] Unknown message type:', message.type)
-          socket.send(JSON.stringify({ type: 'error', message: `Unknown type: ${message.type}` }))
+        default: socket.send(JSON.stringify({ type: 'error', message: `Unknown type: ${message.type}` }))
       }
     })
   })
-  server.listen(port, '127.0.0.1', async () => {
+  server.listen(port, '127.0.0.1', () => {
     const url = `http://127.0.0.1:${port}`
+    const systray = new SysTray({
+      menu: {
+        icon: process.platform === 'win32' ? './public/tray.ico' : './public/tray.png',
+        isTemplateIcon: process.platform === 'darwin',
+        title: 'Discord RPC',
+        tooltip: 'Discord RPC is running',
+        items: [
+          {
+            title: 'Open Web UI',
+            tooltip: 'Open the web interface in your browser',
+            checked: false,
+            enabled: true
+          },
+          {
+            title: 'Open Config',
+            tooltip: 'Open config.json in the default editor',
+            checked: false,
+            enabled: true
+          },
+          {
+            title: 'Quit',
+            tooltip: 'Quit Discord RPC',
+            checked: false,
+            enabled: true
+          }
+        ]
+      },
+      debug: false,
+      copyDir: true
+    })
+    systray.onClick((action) => {
+      if (action.seq_id === 0) openBrowser(url)
+      if (action.seq_id === 1) openConfigFile()
+      if (action.seq_id === 2) quitApp({ server, systray })
+    })
     openBrowser(url)
   })
 }

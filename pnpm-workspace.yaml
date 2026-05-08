@@ -1,4 +1,6 @@
 allowBuilds:
+  node-hide-console-window: true
   register-scheme: true
+
 onlyBuiltDependencies:
   - register-scheme
