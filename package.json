@@ -6,23 +6,36 @@
   "bin": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "build:win": "pkg . --target node20-win-x64 --output dist/drpc.exe --compress GZip",
-    "build:mac": "pkg . --target node20-mac-x64 --output dist/drpc-mac --compress GZip",
-    "build:linux": "pkg . --target node20-linux-x64 --output dist/drpc-linux --compress GZip",
-    "build:all": "npm run build:win && npm run build:mac && npm run build:linux"
+
+    "build:win:bin": "pkg . --target node20-win-x64 --output dist/drpc.exe --compress GZip",
+    "build:mac:bin": "pkg . --target node20-mac-x64 --output dist/drpc-mac --compress GZip",
+    "build:linux:bin": "pkg . --target node20-linux-x64 --output dist/drpc-linux --compress GZip",
+
+    "postbuild:win": "node scripts/postbuild-win.js",
+    "postbuild:mac": "node scripts/postbuild-mac.js",
+    "postbuild:linux": "node scripts/postbuild-linux.js",
+
+    "build:win": "pnpm run build:win:bin && pnpm run postbuild:win",
+    "build:mac": "pnpm run build:mac:bin && pnpm run postbuild:mac",
+    "build:linux": "pnpm run build:linux:bin && pnpm run postbuild:linux",
+
+    "build:all": "pnpm run build:win && pnpm run build:mac && pnpm run build:linux"
   },
   "pkg": {
     "assets": [
       "public/**/*"
     ],
     "targets": [
-      "node20-win-x64"
+      "node20-win-x64",
+      "node20-mac-x64",
+      "node20-linux-x64"
     ]
   },
   "dependencies": {
     "ws": "^8.18.0"
   },
   "devDependencies": {
-    "@yao-pkg/pkg": "^5.12.0"
+    "@yao-pkg/pkg": "^5.12.0",
+    "rcedit": "^5.0.2"
   }
 }
