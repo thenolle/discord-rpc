@@ -1,0 +1,4 @@
+allowBuilds:
+  register-scheme: true
+onlyBuiltDependencies:
+  - register-scheme
