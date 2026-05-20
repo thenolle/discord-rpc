@@ -3,40 +3,40 @@
 ## Supported Versions
 
 | Version | Supported |
-|---------|-----------|
-| latest  | ✅        |
-| older   | ❌        |
+|---|---|
+| latest | ✅ |
+| older | ❌ |
 
-Only the latest release receives security updates. Please update before reporting.
+Only the latest release receives security updates. Please update before reporting a vulnerability.
 
 ---
 
 ## Reporting a Vulnerability
 
-**Do not open a public GitHub issue for security vulnerabilities.**
+Do not open a public GitHub issue for security vulnerabilities.
 
-Report vulnerabilities privately via one of these channels:
+Report vulnerabilities privately through one of these channels:
 
-- **Discord**: [nolly__](https://discord.com/users/1030561407411966064)
+- **Discord**: [nolly__](https://discord.com/invite/JYDzHfgmrP) (DM or open a ticket)
 - **GitHub**: [Private security advisory](https://github.com/thenolle/discord-rpc/security/advisories/new)
 
 Please include:
 
-- A clear description of the vulnerability
-- Steps to reproduce or proof-of-concept code
-- Potential impact assessment
-- Your suggested fix (optional but appreciated)
+- A clear description of the vulnerability.
+- Steps to reproduce, or proof-of-concept code.
+- An assessment of the potential impact.
+- A suggested fix, if available.
 
 ---
 
 ## Response Timeline
 
-| Step                     | Target Time   |
-|--------------------------|---------------|
-| Acknowledgement          | Within 48h    |
-| Initial assessment       | Within 5 days |
-| Fix or mitigation        | Within 30 days (severity-dependent) |
-| Public disclosure        | After fix is released |
+| Step | Target Time |
+|---|---|
+| Acknowledgement | Within 48 hours |
+| Initial assessment | Within 5 days |
+| Fix or mitigation | Within 30 days, depending on severity |
+| Public disclosure | After the fix is released |
 
 ---
 
@@ -44,15 +44,15 @@ Please include:
 
 This policy applies to the `drpc` executable and its source code.
 
-**In scope:**
+### In scope
 
-- RPC server security issues
-- Local HTTP/WebSocket server vulnerabilities
-- Image proxy misuse or open relay potential
-- Arbitrary file read/write via server endpoints
+- RPC server security issues.
+- Local HTTP/WebSocket server vulnerabilities.
+- Image proxy misuse or open-relay potential.
+- Arbitrary file read or write via server endpoints.
 
-**Out of scope:**
+### Out of scope
 
-- Discord's own platform security
-- Imgur's platform security
-- Third-party dependency issues (report those upstream)
+- Discord platform security.
+- Imgur platform security.
+- Third-party dependency issues, which should be reported upstream.

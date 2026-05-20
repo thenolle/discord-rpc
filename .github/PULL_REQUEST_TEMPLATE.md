@@ -1,6 +1,6 @@
 ## Summary
 
-<!-- What does this PR do? Keep it to 1-3 sentences. -->
+<!-- What does this PR do? Keep it to 1–3 sentences. -->
 
 Closes #<!-- issue number if applicable -->
 
@@ -22,25 +22,25 @@ Closes #<!-- issue number if applicable -->
 
 <!-- List the key changes made in this PR. -->
 
--
--
--
+- 
+- 
+- 
 
 ---
 
-## How Has This Been Tested?
+## Testing
 
-<!-- Describe how you tested your changes. -->
+<!-- Describe how the changes were tested. -->
 
-- [ ] Ran `pnpm start` and verified in browser
-- [ ] Built with `pnpm build:win` and tested the executable
+- [ ] Ran `bun run start` and verified the app in the browser
+- [ ] Built with `bun run build:win` and tested the compiled executable
 - [ ] Tested RPC connection with Discord running
-- [ ] Verified no regressions on existing features
+- [ ] Verified no regressions in existing features
 
-**Environment:**
+### Environment
 
 - OS:
-- Node.js version:
+- Bun version:
 - Discord client version:
 
 ---
@@ -48,9 +48,9 @@ Closes #<!-- issue number if applicable -->
 ## Checklist
 
 - [ ] My branch is up to date with `main`
-- [ ] My code follows the project's code style (no semicolons, single quotes, DRY)
-- [ ] I have reviewed my own diff before opening this PR
-- [ ] I have commented non-obvious logic
-- [ ] No console.log or debug code left behind
-- [ ] No new warnings introduced
-- [ ] Relevant documentation has been updated
+- [ ] My code follows the project style guide: no semicolons, single quotes, DRY
+- [ ] I reviewed my own diff before opening this PR
+- [ ] I commented non-obvious logic where needed
+- [ ] No debug logs or temporary code were left behind
+- [ ] No new warnings were introduced
+- [ ] Relevant documentation was updated

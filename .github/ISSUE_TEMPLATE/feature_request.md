@@ -20,17 +20,17 @@ assignees: TheNolle
 
 ## Alternatives Considered
 
-<!-- Any other solutions you considered and why you prefer yours. -->
+<!-- Describe any alternative approaches you considered and why you prefer this one. -->
 
 ---
 
 ## Would you be willing to contribute this feature?
 
 - [ ] Yes, I can open a PR
-- [ ] No, I am only suggesting
+- [ ] No, I am only suggesting it
 
 ---
 
 ## Additional Context
 
-<!-- Mockups, references, examples from other projects. -->
+<!-- Add mockups, references, screenshots, or examples from other projects. -->

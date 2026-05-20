@@ -1,204 +1,318 @@
-# Discord RPC (drpc)
+# Discord RPC
 
-Ultra-lightweight Discord Rich Presence controller for Node.js - customizable presence with a modern in-browser GUI. Zero dependency. Runs locally, serves a modern web UI, and ships as a portable `.exe`.
+A lightweight Discord Rich Presence controller built with **Bun**. It runs as a small local background app, exposes a polished browser-based control panel, and integrates with the system tray without requiring Electron or a terminal window in normal Windows builds.
 
-![Platform](https://img.shields.io/badge/platform-Windows-blue?style=flat-square)
-![Node](https://img.shields.io/badge/node-%3E%3D18-green?style=flat-square)
+![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-blue?style=flat-square)
+![Bun](https://img.shields.io/badge/bun-%3E%3D1.3.14-green?style=flat-square)
+![Typescript](https://img.shields.io/badge/language-TypeScript-blue?style=flat-square)
+![Made With Love](https://img.shields.io/badge/made%20with-%E2%9D%A4%EF%B8%8F-pink?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-orange?style=flat-square)
 ![GitHub](https://img.shields.io/github/stars/thenolle/discord-rpc?style=social)
 
 ---
 
-## ✨ Features
+## Overview
 
-| Feature                  | Description                                                                   |
-|--------------------------|-------------------------------------------------------------------------------|
-| 🎮 **Any Activity Type** | Playing, Streaming, Listening to, Watching, Competing in                      |
-| 🎨 **Rich Media**        | Large + small images via upload to Imgur or custom asset keys                 |
-| ⏱️ **Timestamps**        | Start timer with `now` or custom Unix ms, optional end timestamp              |
-| 👥 **Party System**      | Current size + max size for multiplayer presence                              |
-| 🔘 **Buttons**           | Up to 2 action buttons with labels and URLs                                   |
-| 🌐 **In-Browser GUI**    | Modern Discord-themed UI, no Electron, ultra-lightweight                      |
-| 🚀 **Portable**          | Single `.exe`, zero install, config saved next to executable                  |
-| 🔄 **Live Preview**      | See your presence exactly as Discord will display it                          |
-| 💾 **Config Persistence**| Save & load settings automatically                                            |
-| 🛠️ **Custom Assets**     | Use your own images via Imgur upload or custom asset keys                     |
-| 🔒 **Privacy**           | All processing is local, no data sent to external servers                     |
-| 🧩 **Extensible**        | Modular codebase, easy to extend with new features or (future) activity types |
-| 🆓 **Free & Open Source** | MIT License, contributions welcome on GitHub                                 |
+Discord RPC is a small desktop-side utility for controlling Discord Rich Presence from a local web interface. It communicates with Discord over local IPC, stores your config on the host machine, and keeps the UI fast and minimal by serving plain HTML, CSS, and JavaScript from a Bun runtime.
+
+Unlike Electron-based alternatives, this project is designed to stay lean:
+- Bun runtime and Bun-compiled binaries
+- Local-only HTTP/WebSocket UI
+- System tray integration
+- No Chromium bundle
+- No always-open terminal requirement for Windows background builds
 
 ---
 
-## 🚀 Quick Start
+## Features
 
-### 1. Download
+| Feature | Details |
+|---|---|
+| Activity types | Supports Playing, Streaming, Listening, Watching, and Competing activities |
+| Rich Presence fields | Set details, state, timestamps, party size, buttons, and image metadata |
+| Image support | Use Discord asset keys, direct image URLs, or anonymous Imgur uploads |
+| Live preview | See a Discord-style preview before applying changes |
+| Local browser UI | Clean in-browser control panel served from the local app |
+| Tray integration | Runs in the background with tray controls for opening the UI, opening config, and quitting |
+| Persistent config | Saves settings to the OS config directory so they survive restarts |
+| Portable builds | Bun-compiled binaries for Windows, macOS, and Linux |
+| Lightweight stack | No Electron, no frontend framework, no Node packaging toolchain |
 
-Grab the latest release from the [Releases](https://github.com/thenolle/discord-rpc/releases) page.
+---
 
-### 2. Run
+## How it works
+
+The app starts a local HTTP server and WebSocket server on `127.0.0.1`, opens the UI in your default browser, and talks to Discord using its local IPC socket. Configuration is stored in the standard user config location for the operating system rather than beside the executable.
+
+### Config locations
+
+| Platform | Config path |
+|---|---|
+| Windows | `%APPDATA%/discord-rpc.json` |
+| macOS | `~/Library/Application Support/discord-rpc.json` |
+| Linux | `$XDG_CONFIG_HOME/discord-rpc.json` or `~/.config/discord-rpc.json` |
+
+---
+
+## Quick start
+
+### 1. Download a release
+
+Download the correct build for your platform from the [Releases](https://github.com/thenolle/discord-rpc/releases) page.
+
+### 2. Launch the app
+
+Run the binary for your platform.
 
 ```bash
 drpc.exe
 ```
 
-The app automatically opens your default browser to the GUI at `http://127.0.0.1:<port>`.
+On Windows background builds, the app is intended to start without showing a terminal window. The app should appear in the system tray and automatically open the local web UI in your default browser.
 
-### 3. Connect to Discord
+### 3. Connect your Discord app
 
-1. Create a Discord Application at [discord.com/developers/home](https://discord.com/developers/home)
-2. Copy the **Application ID** (Client ID)
-3. Paste it into the GUI and click **Connect**
+1. Open the [Discord Developer Portal](https://discord.com/developers/applications)
+2. Create an application or use an existing one
+3. Copy the **Application ID**
+4. Paste it into the UI
+5. Click **Connect**
 
-### 4. Customize & Apply
+### 4. Apply a presence
 
-Fill in your presence details and click **Apply presence**. Your Discord status updates instantly.
+Fill in the desired fields and click **Apply presence**. Discord should update immediately once the IPC connection is active.
 
 ---
 
-## 📖 Usage Guide
+## Usage
 
-### Activity Types
+### Activity types
 
-| Type               | Emoji | Description                    |
-|--------------------|-------|--------------------------------|
-| Playing            | 🎮    | Standard game/activity         |
-| Streaming          | 🎙️    | Twitch/YouTube stream          |
-| Listening to       | 🎧    | Music / Spotify                |
-| Watching           | 📺    | Video / Stream                 |
-| Competing in       | 🏆    | Tournament / competition       |
-
-**Streaming**: Add your Twitch/YouTube URL to enable the stream button.
+| Type | Description |
+|---|---|
+| Playing | Standard activity |
+| Streaming | Requires a valid `http://` or `https://` stream URL |
+| Listening | Useful for music or audio status |
+| Watching | Useful for streams, videos, or media |
+| Competing | Useful for tournaments or ranked sessions |
 
 ### Images
 
-- **Upload**: Click or drag an image to upload (goes to Imgur anonymously)
-- **Custom Asset**: Type a Discord custom asset key or full `https://` URL
-- **Glyph fallback**: Text glyph when no image is provided
+The UI supports three image input styles:
+
+- Discord asset keys from your application assets
+- Direct remote image URLs
+- Anonymous uploads to Imgur through the built-in uploader
 
 ### Timestamps
 
-- Type `now` in **Start timestamp** to begin an elapsed timer
-- Enter Unix milliseconds for custom timestamps
-- Click **Set start = now** for quick timer
-- **Clear timestamps** resets both fields
+- Use `now` as the start timestamp to begin an elapsed timer immediately
+- Use Unix milliseconds for custom start or end values
+- Clear both timestamp fields to remove the timer
 
-### Party
+### Party data
 
-Both **Current size** and **Max size** are required for party to display. Current must be ≤ max.
+Party display is only sent when both values are valid:
+- `partySize`
+- `partyMax`
+
+`partySize` must be less than or equal to `partyMax`.
 
 ### Buttons
 
-- Maximum 2 buttons
-- Both **label** and **URL** required (URL must start with `https://`)
-- Buttons appear below your presence in Discord
+Discord supports up to two Rich Presence buttons. Each button requires:
+- a label
+- a valid URL
 
 ---
 
-## 🛠️ Technical Details
+## Architecture
 
-| Component       | Details                                      |
-|-----------------|----------------------------------------------|
-| Runtime         | Node.js (bundled)                            |
-| GUI             | Vanilla HTML/CSS/JS, served locally          |
-| RPC Transport   | Discord IPC (requires Discord/arrpc running) |
-| Image Hosting   | Imgur (anonymous uploads)                    |
-| Config File     | `config.json` next to executable             |
-| Architecture    | Single executable, portable                  |
-| Platform        | Windows x64                                  |
+### Runtime stack
 
-### Folder Structure
+| Layer | Implementation |
+|---|---|
+| Runtime | Bun |
+| Language | TypeScript |
+| UI | Vanilla HTML, CSS, and JavaScript |
+| Transport to UI | Local HTTP + WebSocket |
+| Transport to Discord | Local Discord IPC pipe/socket |
+| Tray | `systray2` |
+| Image uploads | Imgur API |
+| Packaging | `bun build --compile` |
+
+### Project goals
+
+This project is optimized around:
+- small runtime footprint
+- simple deployment
+- no Electron or other heavy bundlers
+- no framework-heavy frontend
+- direct Bun-native builds
+
+---
+
+## Development
+
+### Requirements
+
+- Bun `1.3.14` or newer
+
+### Install
+
+```bash
+bun install
+```
+
+### Run in development
+
+```bash
+bun run start
+```
+
+This launches the local server directly from `src/server.ts`.
+
+---
+
+## Build
+
+### Available scripts
+
+```bash
+bun run build:win
+bun run build:win:arm
+bun run build:mac
+bun run build:mac:x64
+bun run build:linux
+bun run build:all
+```
+
+### Build targets
+
+| Script | Target |
+|---|---|
+| `build:win` | Windows x64 |
+| `build:win:arm` | Windows ARM64 |
+| `build:mac` | macOS ARM64 |
+| `build:mac:x64` | macOS x64 |
+| `build:linux` | Linux x64 |
+| `build:all` | All targets above |
+
+### Output
+
+Compiled binaries are written to `dist/`.
+
+Example:
 
 ```text
-discord-rpc/
+dist/
 ├── drpc.exe
-└── config.json
+├── drpc-win-arm.exe
+├── drpc-mac-arm
+├── drpc-mac-x64
+└── drpc-linux
 ```
 
 ---
 
-## 🔧 Development
+## Troubleshooting
 
-### Prerequisites
+### App does not connect to Discord
 
-- Node.js ≥ 18
-- pnpm (recommended) or npm
+- Make sure Discord is running
+- Make sure the Application ID is valid
+- Make sure no local security tool is blocking IPC access
+- Reconnect from the UI after Discord starts
 
-### Install Dependencies
+### Presence does not update
 
-```bash
-pnpm install # or npm install
+- Confirm the UI status shows as connected
+- Click **Apply presence** after editing values
+- Check that streaming mode includes a valid stream URL when using activity type `1`
+
+### Config does not load
+
+The app loads config from the OS-specific config path, not from the executable directory. Verify that the JSON file exists and is valid at the expected path.
+
+### Tray icon is missing
+
+A missing tray icon usually means the runtime icon asset could not be decoded or written correctly. Verify that:
+- the embedded icon data is valid
+- base64 decoding strips any `data:*;base64,` prefix before writing
+- Windows receives a valid `.ico` file for tray usage
+
+### Images do not appear
+
+- Discord asset keys must exist in your Discord application settings
+- Remote image URLs must be reachable
+- Imgur uploads depend on the external upload request succeeding
+
+---
+
+## Configuration example
+
+```json
+{
+  "clientId": "1234567890123456789",
+  "details": "Coding in TypeScript",
+  "state": "For Discord RPC",
+  "largeImageKey": "https://i.imgur.com/F6mPgq3.png",
+  "largeImageText": "Typescript is love, TypeScript is life",
+  "smallImageKey": "https://i.imgur.com/yn4HnRU.png",
+  "smallImageText": "Bun is blazing fast",
+  "startTimestamp": "now",
+  "endTimestamp": "",
+  "partySize": "",
+  "partyMax": "",
+  "buttons": [
+    {
+      "label": "",
+      "url": ""
+    },
+    {
+      "label": "",
+      "url": ""
+    }
+  ],
+  "type": 0,
+  "streamUrl": ""
+}
 ```
 
-### Run in Development
+---
 
-```bash
-pnpm start # or npm start
-```
+## Why Bun
 
-### Build Executable
-
-```bash
-pnpm build:win # or npm run build:win
-# or
-pnpm build:mac # or npm run build:mac
-# or
-pnpm build:linux # or npm run build:linux
-# or
-pnpm run build:all # builds all platforms
-```
-
-Output: `dist/drpc.exe`/`dist/drpc-mac`/`dist/drpc-linux`
+This project originally targeted a more traditional Node-based packaging flow, but now uses a Bun-native runtime and Bun-native build pipeline. That keeps the toolchain simpler, removes the old executable packager dependency, and aligns development and production around a single runtime.
 
 ---
 
-## 🐛 Troubleshooting
+## Contributing
 
-### "Not connected to Discord"
-
-- Ensure Discord is running
-- Client ID must be valid (Discord Application ID, not token)
-- RPC connects via IPC - Discord must be open
-
-### Images not showing in preview
-
-- Use full `https://` URLs or upload via the GUI
-- The proxy endpoint handles Imgur CORS correctly
-
-### Presence not updating
-
-- Click **Apply presence** after editing fields
-- Check console for errors
-- Ensure RPC shows **Connected** status
-
-### Config not saving
-
-- `config.json` is saved next to the executable
-- Ensure the folder is writable (not in `Program Files`)
+Issues and pull requests are welcome. When reporting bugs, include:
+- platform and architecture
+- Bun version
+- whether the issue happens in development or compiled builds
+- console output or browser console errors
+- relevant config values if safe to share
 
 ---
 
-## 🤝 Support & Community
+## License
 
-- **Discord**: [Join the server](https://discord.com/invite/JYDzHfgmrP)
-- **Issues**: [GitHub Issues](https://github.com/thenolle/discord-rpc/issues)
-- **Sponsor**: [GitHub Sponsors](https://github.com/sponsors/thenolle)
+MIT. See [LICENSE](LICENSE) for details.
 
 ---
 
-## 📄 License
+## Credits
 
-MIT License - see [LICENSE](LICENSE) for details.
-
-You are free to use, modify, and distribute this software for any purpose, but it comes with no warranty.
-
----
-
-## 🙏 Acknowledgments
-
-- [discord-rpc](https://github.com/discord/discord-rpc) by Discord
-- [pkg](https://github.com/vercel/pkg) by Vercel
-- Icon design inspired by Discord's design system
+- [Discord](https://discord.com/) Rich Presence / [Discord](https://discord.com/) IPC ecosystem
+- [Bun](https://bun.sh/)
+- [systray2](https://www.npmjs.com/package/systray2)
+- [ws](https://www.npmjs.com/package/ws)
 
 ---
 
-Made with 💜 by [Nolly](https://thenolle.com)
+Built by [Nolly](https://thenolle.com) with ❤️
+
+> Protect the Dolls 🏳️‍⚧️

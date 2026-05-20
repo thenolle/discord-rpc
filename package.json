@@ -2,32 +2,22 @@
   "name": "discord-rpc",
   "version": "1.0.0",
   "description": "Ultra-light Discord Rich Presence",
-  "main": "src/server.js",
-  "bin": "src/server.js",
+  "type": "module",
   "scripts": {
-    "start": "node src/server.js",
-    "build:win": "pkg . --target node20-win-x64 --output dist/drpc.exe --compress GZip && pnpm run build:win:launcher",
-    "build:win:launcher": "node -e \"const fs=require('fs');fs.mkdirSync('dist',{recursive:true});fs.copyFileSync('scripts/run-hidden.vbs','dist/run-hidden.vbs')\"",
-    "build:mac": "pkg . --target node20-mac-x64 --output dist/drpc-mac --compress GZip",
-    "build:linux": "pkg . --target node20-linux-x64 --output dist/drpc-linux --compress GZip",
-    "build:all": "pnpm run build:win && pnpm run build:mac && pnpm run build:linux"
-  },
-  "pkg": {
-    "assets": [
-      "public/**/*",
-      "scripts/run-hidden.vbs"
-    ],
-    "targets": [
-      "node20-win-x64",
-      "node20-mac-x64",
-      "node20-linux-x64"
-    ]
+    "start": "bun run src/server.ts",
+    "build:win": "bun build src/server.ts --compile --target=bun-windows-x64 --windows-icon=./assets/tray.ico --outfile build/drpc.exe && bun run scripts/patch-windows-gui.ts build/drpc.exe && bun run scripts/copy-release.ts build/drpc.exe dist/drpc.exe && bun run scripts/cleanup-build.ts",
+    "build:win:arm": "bun build src/server.ts --compile --target=bun-windows-arm64 --windows-icon=./assets/tray.ico --outfile build/drpc-win-arm.exe && bun run scripts/patch-windows-gui.ts build/drpc-win-arm.exe && bun run scripts/copy-release.ts build/drpc-win-arm.exe dist/drpc-win-arm.exe && bun run scripts/cleanup-build.ts",
+    "build:mac": "bun build src/server.ts --compile --target=bun-darwin-arm64 --outfile build/drpc-mac && bun run scripts/copy-release.ts build/drpc-mac dist/drpc-mac && bun run scripts/cleanup-build.ts",
+    "build:mac:x64": "bun build src/server.ts --compile --target=bun-darwin-x64 --outfile build/drpc-mac-x64 && bun run scripts/copy-release.ts build/drpc-mac-x64 dist/drpc-mac-x64 && bun run scripts/cleanup-build.ts",
+    "build:linux": "bun build src/server.ts --compile --target=bun-linux-x64 --outfile build/drpc-linux && bun run scripts/copy-release.ts build/drpc-linux dist/drpc-linux && bun run scripts/cleanup-build.ts",
+    "build:all": "bun run build:win && bun run build:win:arm && bun run build:mac && bun run build:mac:x64 && bun run build:linux"
   },
   "dependencies": {
-    "systray2": "^2.1.4",
+    "tray-icon-node": "^0.1.1",
     "ws": "^8.18.0"
   },
   "devDependencies": {
-    "@yao-pkg/pkg": "^5.12.0"
+    "@types/bun": "^1.3.14",
+    "@types/ws": "^8.18.1"
   }
 }

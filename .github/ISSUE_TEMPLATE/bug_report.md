@@ -8,7 +8,7 @@ assignees: TheNolle
 
 ## Description
 
-<!-- A clear, concise description of the bug. -->
+<!-- Provide a clear, concise description of the bug. -->
 
 ---
 
@@ -34,19 +34,19 @@ assignees: TheNolle
 
 ## Environment
 
-| Field             | Value         |
-|-------------------|---------------|
-| OS                |               |
-| Node.js version   |               |
-| Executable or dev |               |
-| Discord version   |               |
-| Browser           |               |
+| Field | Value |
+|---|---|
+| OS | |
+| Bun version | |
+| Executable or dev | |
+| Discord version | |
+| Browser | |
 
 ---
 
 ## Logs / Screenshots
 
-<!-- Paste relevant terminal output or attach screenshots. -->
+<!-- Paste relevant console output or attach screenshots. -->
 
 ```text
 
